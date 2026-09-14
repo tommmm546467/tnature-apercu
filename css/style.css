@@ -330,6 +330,13 @@ strong{ font-weight: 600; }
 }
 .btn--primaire:hover{ background: var(--action-fond-survol); box-shadow: var(--ombre-survol); }
 
+/* Le « Réserver » de la barre de menu et du hero : les deux états du bouton
+   primaire, échangés. Le rose bois est posé d'emblée — c'est l'action qu'on
+   veut voir venir — et l'anthracite prend le relais au survol. Partout
+   ailleurs c'est l'inverse : anthracite au repos, rose à l'approche. */
+.btn--reserver{ background: var(--c-bois-rose-fond); }
+.btn--reserver:hover{ background: var(--action-fond); }
+
 .btn--secondaire{
   background: transparent;
   color: var(--c-blanc);
