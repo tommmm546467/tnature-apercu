@@ -1,0 +1,66 @@
+/* ============================================================
+   T'NATURE — Reset minimal
+   ============================================================ */
+
+*, *::before, *::after{ box-sizing: border-box; }
+
+html{ -webkit-text-size-adjust: 100%; }
+
+body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd, ul, ol{
+  margin: 0;
+}
+
+/* `:where()` annule la spécificité : sans lui, `ul[class]` (0,1,1) l'emporte
+   sur n'importe quelle règle de classe (0,1,0) et écrase silencieusement les
+   paddings voulus. C'est exactement ce qui privait `.points__liste` de sa
+   marge verticale. */
+:where(ul[class], ol[class]){ list-style: none; padding: 0; }
+
+body{
+  min-height: 100vh;
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img, picture, video, canvas, svg, iframe{
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select{ font: inherit; color: inherit; }
+
+button{
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+a{ color: inherit; }
+
+textarea{ resize: vertical; }
+
+table{ border-collapse: collapse; }
+
+/* Cible de saut d'ancre : compense le header collant */
+[id]{ scroll-margin-top: calc(var(--h-header) + 1rem); }
+
+/* Focus visible, jamais supprimé */
+:focus-visible{
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Respect strict de la préférence système */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+[hidden]{ display: none !important; }

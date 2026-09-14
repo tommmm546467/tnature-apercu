@@ -1,0 +1,131 @@
+/* ============================================================
+   T'NATURE — Jetons de design
+   Toutes les valeurs de couleur viennent du logo et du bloc
+   « AU CŒUR DE CHÂTEAU-CHALON » de l'ancien site (brief §3.2).
+   Ne pas introduire de couleur en dur ailleurs que dans ce fichier.
+   ============================================================ */
+
+:root{
+  /* — Neutres : le squelette du site (≈80 % de la surface) — */
+  --c-encre:      #383838; /* anthracite du lettrage et du brin d'herbes */
+  --c-encre-doux: #5A5A5A; /* textes secondaires */
+  --c-blanc:      #FFFFFF;
+  --c-ivoire:     #FAF6F1; /* fond de section clair par défaut */
+
+  /* — Chauds : texture aquarelle du carré du logo — */
+  --c-creme:      #F8E8D8;
+  --c-sable:      #F8E8C8;
+  --c-peche:      #F8D8B8;
+  --c-abricot:    #F8C8A8;
+  --c-terre:      #E8B898; /* ombres de l'aquarelle */
+
+  /* — Roses : dégradé du lettrage — */
+  --c-rose-poudre:#F8D8D8;
+  --c-rose:       #F898A8;
+  --c-corail:     #F87898; /* accent chaud du logo */
+  --c-framboise:  #E86888; /* version foncée, survols */
+
+  /* — Variantes assombries, obligatoires dès qu'une couleur porte du TEXTE —
+     Le corail et la framboise du logo plafonnent à 2,4:1 sur fond clair :
+     illisibles au sens WCAG AA. Ces trois tons gardent la teinte (345°) et la
+     douceur de la palette tout en passant 4,5:1 sur TOUS les fonds clairs
+     du site (blanc, ivoire, crème, sable, pêche). Valeurs calculées, pas
+     choisies à l'œil — voir README §« Contrastes ». */
+  --c-bois-rose:      #A13D56; /* texte accentué : sur-titres, liens, libellés */
+  --c-bois-rose-sombre:#86324A; /* survol des liens */
+  --c-bois-rose-fond: #B1435F; /* fond de bouton : blanc dessus à 5,45:1 */
+  --c-terre-texte:    #815731; /* texte brun sur crème (métas de placeholder) */
+
+  /* — Mauve : rectangle plein du motif signature — */
+  --c-mauve:      #DBBACC;
+
+  /* — Ocre : état actif hérité de l'ancien menu. À doser. — */
+  --c-ocre:       #C9B200;
+
+  /* — Rôles sémantiques : c'est ce qu'on utilise dans style.css — */
+  --fond-page:        var(--c-ivoire);
+  --texte:            var(--c-encre);
+  --texte-doux:       var(--c-encre-doux);
+  --texte-inverse:    var(--c-ivoire);
+  --accent:           var(--c-bois-rose);      /* texte : version accessible */
+  --accent-decor:     var(--c-corail);         /* décor non textuel seulement */
+  --accent-fonce:     var(--c-bois-rose-sombre);
+  --action-fond:      var(--c-encre);
+  --action-texte:     var(--c-blanc);
+  --action-fond-survol: var(--c-bois-rose-fond);
+  --etoile:           var(--c-ocre);
+  --bordure-douce:    rgba(232,184,152,.55);
+  --texte-brun:       var(--c-terre-texte);
+
+  /* — Dégradé aquarelle du logo, défini une seule fois —
+     Sert au lettrage du logo et au rectangle qui comble les cartes. */
+  --degrade-logo: linear-gradient(100deg,
+    var(--c-rose) 0%, var(--c-corail) 18%, var(--c-abricot) 48%,
+    var(--c-peche) 68%, var(--c-sable) 100%);
+
+  /* — Typographie — */
+  --f-titre:  "Caveat Brush", "Permanent Marker", "Amatic SC", cursive;
+  --f-ui:     "Jost", "Poppins", "Helvetica Neue", Arial, sans-serif;
+  --f-corps:  "Open Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --fs-h1:    clamp(2.5rem, 6vw, 5rem);
+  --fs-h2:    clamp(1.9rem, 4vw, 3.2rem);
+  --fs-h3:    clamp(1.2rem, 2vw, 1.5rem);
+  --fs-h4:    clamp(1.05rem, 1.4vw, 1.15rem);
+  --fs-body:  clamp(1rem, 1.1vw, 1.0625rem);
+  --fs-petit: .875rem;
+  --fs-micro: .78125rem;
+
+  --lh-titre: 1.05;
+  --lh-corps: 1.7;
+  --ls-surtitre: .12em;
+
+  /* — Espacements — */
+  --e-1: .25rem;  --e-2: .5rem;   --e-3: .75rem;  --e-4: 1rem;
+  --e-5: 1.5rem;  --e-6: 2rem;    --e-7: 3rem;    --e-8: 4rem;
+  --e-9: 6rem;    --e-10: 8rem;
+  --section-y: clamp(3.5rem, 8vw, 7rem);
+  --gouttiere:  clamp(1rem, 2.5vw, 2rem);
+  --largeur-max: 1280px;
+  --largeur-texte: 68ch;
+
+  /* — Rayons (brief §3.5) — */
+  --r-pilule: 999px;  /* CTA */
+  --r-carte:  16px;
+  --r-champ:  12px;
+  --r-modale: 20px;
+  --r-vignette: 12px;
+
+  /* — Ombres : douces et chaudes, jamais noires — */
+  --ombre-carte:  0 8px 30px rgba(56,56,56,.08);
+  --ombre-survol: 0 16px 44px rgba(56,56,56,.14);
+  --ombre-header: 0 2px 18px rgba(56,56,56,.09);
+
+  /* — Mouvement — */
+  --t-rapide: .18s ease;
+  --t-base:   .25s ease;
+  --t-lent:   .5s cubic-bezier(.22,.61,.36,1);
+  --t-rideau: .9s cubic-bezier(.76,0,.24,1);
+
+  /* Taille du texte courant sur téléphone : le sous-titre du hero et les
+     paragraphes des sections Maison et Chambres s'y alignent. */
+  --fs-mobile-texte: .9375rem;
+
+  /* Hauteur d'une pastille : ses deux paddings, sa ligne de texte, ses bordures.
+     Sert à réserver un nombre de rangs fixe dans les cartes de chambre. */
+  --h-puce: calc(.8rem + 1.3 * var(--fs-micro) + 2px);
+
+  /* — Divers — */
+  --h-header: 76px;
+  --z-header: 100;
+  --z-modale: 500;
+  --z-loader: 9999;
+}
+
+@media (max-width: 767px){
+  :root{ --h-header: 64px; }
+}
+
+/* Le site est pensé en clair. On neutralise l'inversion automatique
+   des navigateurs pour que la palette du logo reste fidèle. */
+:root{ color-scheme: only light; }

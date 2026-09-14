@@ -1,0 +1,11 @@
+# Site d'aperçu — relecture cliente, pas le site public.
+# Aucune indexation : le vrai site est à publier sur son propre domaine.
+#
+# ATTENTION : sur GitHub Pages, ce fichier ne sert À RIEN. Les robots ne lisent
+# le robots.txt qu'à la racine du domaine (tommmm546467.github.io/robots.txt),
+# jamais celui d'un sous-dossier. Ce qui protège vraiment l'aperçu, c'est la
+# balise « noindex, nofollow » posée dans les trois pages — et c'est tant mieux :
+# un Disallow empêcherait Google de lire cette balise, donc de savoir qu'il ne
+# doit pas indexer. Le fichier reste ici pour l'hébergeur qui, lui, l'écoute.
+User-agent: *
+Disallow: /
