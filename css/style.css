@@ -850,9 +850,6 @@ strong{ font-weight: 600; }
   text-align: left;
   transition: box-shadow var(--t-base), transform var(--t-base);
 }
-/* Les copies ne servent qu'à la roulette du téléphone (§« les espaces
-   défilent ») : partout ailleurs, elles n'existent pas. */
-.carte-espace--copie{ display: none; }
 .carte-espace:hover{ transform: translateY(-3px); box-shadow: var(--ombre-survol); }
 .carte-espace__media{ position: absolute; inset: 0; transition: transform var(--t-lent); }
 .carte-espace__media .placeholder-img{ width: 100%; height: 100%; aspect-ratio: auto; border-radius: 0; }
@@ -882,58 +879,6 @@ strong{ font-weight: 600; }
   backdrop-filter: blur(4px);
 }
 .carte-espace__loupe svg{ width: 18px; height: 18px; }
-/* Les flèches n'existent que le temps du rail (juste en dessous). La classe
-   est doublée pour passer devant `.carrousel__nav`, dont ces boutons héritent
-   le rond blanc et qui est écrit plus bas dans ce fichier (§« Carrousel ») :
-   à poids égal, c'est le dernier écrit qui gagne, et les flèches restaient
-   affichées sur grand écran. Ne pas « simplifier » en `.espaces__nav`. */
-.carrousel__nav.espaces__nav{ display: none; }
-
-/* ---------- Sur téléphone, les espaces défilent ----------
-   Empilées, les quatre cartes faisaient près de 900 px de haut pour quatre
-   photos : on descendait longtemps sans rien apprendre de plus. En rang, la
-   carte suivante affleure toujours le bord droit, et c'est ce débord qui dit
-   qu'il y en a d'autres — mieux qu'une rangée de pastilles.
-   Le défilement est celui du navigateur : on glisse au doigt, les flèches ne
-   font que le lui demander. Sans JavaScript, elles s'effacent (§20) et le
-   rail continue de se glisser. */
-@media (max-width: 767px){
-  .espaces__rail{ position: relative; }
-  .espaces__grille{
-    /* La carte se mesure sur l'écran et non sur la zone intérieure du rail :
-       celle-ci dépend du retrait ci-dessous, qui dépend lui-même de la carte —
-       en pourcentage, le calcul tournerait en rond. */
-    --carte: 72vw;
-    display: flex;
-    gap: var(--gouttiere);
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    /* Le rail traverse l'écran d'un bord à l'autre — d'où la marge négative,
-       qui annule la gouttière du contenant. Le retrait latéral, lui, vaut
-       exactement ce qui reste de l'écran une fois la carte posée : sans lui,
-       la première et la dernière ne pourraient pas se centrer, faute de place
-       pour défiler au-delà. */
-    padding-inline: calc((100vw - var(--carte)) / 2);
-    margin-inline: calc(-1 * var(--gouttiere));
-  }
-  .espaces__grille::-webkit-scrollbar{ display: none; }
-  /* Chaque carte s'arrête au milieu de l'écran, ses deux voisines dépassant
-     d'autant de part et d'autre. Pas de `scroll-padding` : le retrait étant
-     le même à gauche et à droite, le centre de la zone de calage est déjà
-     celui de l'écran. */
-  .carte-espace{ flex: 0 0 var(--carte); scroll-snap-align: center; }
-  .carte-espace--copie{ display: block; }
-  /* Pas d'apparition carte par carte ici (§19) : l'observateur prend l'écran
-     pour référence, et les deux dernières cartes sont posées hors de l'écran,
-     à droite. Elles ne seraient « vues » qu'au moment où on les amène —
-     arrivées blanches, remplies une demi-seconde plus tard, sous les yeux du
-     visiteur. Empilées, elles entraient par le bas, une par une : le cas ne
-     se posait pas. */
-  .espaces__grille .apparait{ opacity: 1; transform: none; transition: none; }
-  .carrousel__nav.espaces__nav{ display: grid; }
-}
 
 /* Carte carte-Google-Maps : écran de consentement RGPD */
 .carte-maps{
@@ -983,7 +928,9 @@ strong{ font-weight: 600; }
   gap: var(--gouttiere);
 }
 @media (max-width: 1023px){ .chambres__grille{ grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 700px){ .chambres__grille{ grid-template-columns: 1fr; } }
+/* Une seule colonne dès 767 px : c'est là que le rail prend la main, et
+   « La maison entière » doit alors se poser au-dessus de lui, pas à côté. */
+@media (max-width: 767px){ .chambres__grille{ grid-template-columns: 1fr; } }
 
 .carte-chambre{
   display: flex;
@@ -1049,13 +996,17 @@ strong{ font-weight: 600; }
    Les positions dépendent du nombre de colonnes : en 3 colonnes la première
    ligne est [maison · Chambre 1 · Chambre 2], en 2 colonnes [maison · Chambre 1].
    Ailleurs il n'y a rien à combler, donc on ne l'affiche pas — ce qui écarte
-   aussi tout risque de débordement quand la différence de hauteur est nulle. */
+   aussi tout risque de débordement quand la différence de hauteur est nulle.
+   Les rangs se comptent DANS LA PISTE, qui ne contient plus que les chambres :
+   `display: contents` aplatit les boîtes, pas l'arbre du document, et
+   `nth-child` lit l'arbre. D'où le décalage d'un cran depuis que « La maison
+   entière » a quitté la piste. */
 @media (min-width: 1024px){
-  .chambres__cellule:nth-child(2) .chambres__comble,
-  .chambres__cellule:nth-child(3) .chambres__comble{ display: block; }
+  .chambres__piste .chambres__cellule:nth-child(1) .chambres__comble,
+  .chambres__piste .chambres__cellule:nth-child(2) .chambres__comble{ display: block; }
 }
-@media (min-width: 701px) and (max-width: 1023px){
-  .chambres__cellule:nth-child(2) .chambres__comble{ display: block; }
+@media (min-width: 768px) and (max-width: 1023px){
+  .chambres__piste .chambres__cellule:nth-child(1) .chambres__comble{ display: block; }
 }
 
 .carte-chambre__media{
@@ -2139,7 +2090,7 @@ strong{ font-weight: 600; }
 }
 .sans-js .modale__voile,
 .sans-js .modale__fermer,
-.sans-js .carte-espace--copie,
+.sans-js [data-rail-copie],
 .sans-js .carrousel__nav,
 .sans-js .carrousel__barre,
 .sans-js .vignettes,
@@ -2501,6 +2452,92 @@ strong{ font-weight: 600; }
   /* La puce qui sépare les métadonnées de la note : sur une ligne qui passe à
      la ligne, elle restait suspendue en fin de ligne. */
   .modale__meta > span[aria-hidden="true"]:not(.avis-badge__etoiles){ display: none; }
+}
+
+/* ---------- Les rails : sur téléphone, les cartes tournent ----------
+   Un même dispositif pour les Espaces, les Chambres, les Prestations et les
+   Activités. Empilées, ces quatre sections faisaient des milliers de pixels
+   de haut sur un téléphone — la seule des Chambres en faisait 4 400, cinq
+   écrans à traverser. En rang, les cartes se suivent, se calent au milieu de
+   l'écran et tournent sans fin.
+
+   Le balisage n'a besoin que de trois attributs : `data-rail` sur le cadre,
+   `data-rail-piste` sur la rangée, `data-rail-copie` sur les copies qui font
+   la boucle. Le comportement suit (carousel.js, `TN.rail`).
+
+   Le défilement est celui du navigateur : on glisse au doigt, avec son
+   inertie et son calage. Les flèches ne font que lui demander d'avancer d'une
+   carte. Sans JavaScript elles s'effacent (§20), les copies aussi, et la
+   rangée reste glissable.
+
+   Ce bloc est volontairement écrit APRÈS toutes les grilles de section : à
+   poids égal, c'est la dernière règle qui gagne, et c'est elle qu'on veut. */
+@media (max-width: 767px){
+  /* `min-width: 0` : le cadre des chambres est une case de grille, et une case
+     refuse par défaut de devenir plus étroite que son contenu. Sans cette
+     ligne, les quinze cartes de la piste poussent la colonne à plus de
+     4 000 px et c'est la page entière qui déborde à l'horizontale au lieu de
+     la piste qui défile. Les trois autres rails sont de simples blocs et ne
+     connaissent pas ce piège — la règle est posée pour tous, elle ne coûte
+     rien là où elle ne sert pas. */
+  [data-rail]{ position: relative; min-width: 0; }
+  [data-rail-piste]{
+    /* La carte se mesure sur l'écran et non sur la zone intérieure de la
+       piste : celle-ci dépend du retrait ci-dessous, qui dépend lui-même de
+       la carte — en pourcentage, le calcul tournerait en rond. */
+    --carte: 72vw;
+    display: flex;
+    flex-wrap: nowrap;
+    /* Les activités sont centrées en grand écran, pour rattraper la seconde
+       ligne. Centrer un contenu qui déborde rend son début inatteignable au
+       défilement : ici, la piste repart de la gauche. */
+    justify-content: flex-start;
+    gap: var(--gouttiere);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* La piste traverse l'écran d'un bord à l'autre — d'où la marge négative,
+       qui annule la gouttière du contenant. Le retrait latéral, lui, vaut
+       exactement ce qui reste de l'écran une fois la carte posée : sans lui,
+       la première et la dernière ne pourraient pas se centrer, faute de place
+       pour défiler au-delà. */
+    padding-inline: calc((100vw - var(--carte)) / 2);
+    margin-inline: calc(-1 * var(--gouttiere));
+  }
+  [data-rail-piste]::-webkit-scrollbar{ display: none; }
+  /* Chaque carte s'arrête au milieu de l'écran, ses deux voisines dépassant
+     d'autant de part et d'autre. Pas de `scroll-padding` : le retrait étant le
+     même à gauche et à droite, le centre de la zone de calage est déjà celui
+     de l'écran.
+     `min-width` est remis à zéro : les cartes d'activité en portent un de
+     240 px qui, sur un écran étroit, les rendrait plus larges que ce que le
+     retrait a prévu — et le calage tomberait à côté du centre. */
+  [data-rail-piste] > *{
+    flex: 0 0 var(--carte);
+    min-width: 0;
+    scroll-snap-align: center;
+  }
+  /* Pas d'apparition carte par carte dans un rail (§19) : l'observateur prend
+     l'écran pour référence, et les cartes posées hors de l'écran, à droite, ne
+     seraient « vues » qu'au moment où on les amène — arrivées blanches,
+     remplies une demi-seconde plus tard, sous les yeux du visiteur. Empilées,
+     elles entraient par le bas, une par une : le cas ne se posait pas. */
+  [data-rail-piste] .apparait{ opacity: 1; transform: none; transition: none; }
+}
+
+@media (min-width: 768px){
+  /* Hors du rail, ni copies ni flèches. La classe des flèches est doublée
+     pour passer devant `.carrousel__nav`, dont elles héritent le rond blanc :
+     à poids égal c'est la plus spécifique qui gagne. Ne pas « simplifier ». */
+  [data-rail-copie]{ display: none; }
+  .carrousel__nav.rail__nav{ display: none; }
+
+  /* Les chambres, et elles seules : le cadre et la piste s'effacent, et les
+     cinq cellules redeviennent des cases de la grille, à la suite de « La
+     maison entière ». La mise en page en grand écran ne bouge donc pas d'un
+     pixel — c'est tout l'intérêt de `display: contents` ici. */
+  .chambres__rail, .chambres__piste{ display: contents; }
 }
 
 /* ---------- La bande de chiffres défile ----------
