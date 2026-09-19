@@ -738,16 +738,39 @@ strong{ font-weight: 600; }
     scrollbar-width: none;
     padding-inline: var(--gouttiere);
     margin-inline: calc(-1 * var(--gouttiere));
+    /* Moins d'air au-dessus et en dessous qu'en grand écran : sur un
+       téléphone cette bande n'est qu'un préambule, elle ne doit pas manger la
+       place de ce qui vient après. */
+    padding-block: var(--e-4);
   }
   .points__liste::-webkit-scrollbar{ display: none; }
+  /* Le chiffre remonte à côté de son icône au lieu de passer dessous : une
+     rangée de moins par carte, et la bande y gagne la hauteur d'une ligne.
+     Flex plutôt que grille : les trois enfants se suivent, et le libellé,
+     forcé à toute la largeur, repart seul à la ligne — le couple icône +
+     chiffre reste centré, ce qu'une grille à deux colonnes ne donnait pas,
+     le libellé qui les enjambe élargissant les colonnes à sa guise. */
   .points__item{
-    flex: 0 0 min(64vw, 230px);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    column-gap: var(--e-2);
+    row-gap: var(--e-1);
+    flex: 0 0 min(58vw, 215px);
     scroll-snap-align: center;
     border-left: 0;
-    padding: var(--e-5) var(--e-4);
+    padding: var(--e-4);
     background: rgba(250,246,241,.06);
     border-radius: var(--r-carte);
   }
+  /* `line-height: 0` : sans lui le SVG s'assoit sur la ligne de base et traîne
+     sous lui le creux réservé aux jambages — l'icône paraîtrait remontée par
+     rapport au chiffre qu'elle accompagne. */
+  .points__icone{ line-height: 0; }
+  .points__icone svg{ width: 26px; height: 26px; }
+  .points__chiffre{ font-size: 1.5rem; }
+  .points__libelle{ flex: 0 0 100%; }
 }
 
 /* ========== 10. LA MAISON ========== */
@@ -2446,9 +2469,9 @@ strong{ font-weight: 600; }
   }
   .points__item,
   .points__item--copie{
-    display: grid;
+    display: flex;
     flex: 0 0 auto;
-    width: min(62vw, 240px);
+    width: min(58vw, 215px);
     margin-right: var(--e-4);
     scroll-snap-align: none;
   }
