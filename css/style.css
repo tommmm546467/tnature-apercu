@@ -897,22 +897,30 @@ strong{ font-weight: 600; }
 @media (max-width: 767px){
   .espaces__rail{ position: relative; }
   .espaces__grille{
+    /* La carte se mesure sur l'écran et non sur la zone intérieure du rail :
+       celle-ci dépend du retrait ci-dessous, qui dépend lui-même de la carte —
+       en pourcentage, le calcul tournerait en rond. */
+    --carte: 72vw;
     display: flex;
     gap: var(--gouttiere);
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    /* Le rail traverse l'écran d'un bord à l'autre, mais s'arrête sur la
-       gouttière : la première carte s'aligne sur le titre au-dessus, la
-       dernière ne colle pas au bord. `scroll-padding` fait tomber l'arrêt du
-       défilement au même endroit, sinon la carte se cale sous la gouttière. */
-    padding-inline: var(--gouttiere);
+    /* Le rail traverse l'écran d'un bord à l'autre — d'où la marge négative,
+       qui annule la gouttière du contenant. Le retrait latéral, lui, vaut
+       exactement ce qui reste de l'écran une fois la carte posée : sans lui,
+       la première et la dernière ne pourraient pas se centrer, faute de place
+       pour défiler au-delà. */
+    padding-inline: calc((100vw - var(--carte)) / 2);
     margin-inline: calc(-1 * var(--gouttiere));
-    scroll-padding-inline: var(--gouttiere);
   }
   .espaces__grille::-webkit-scrollbar{ display: none; }
-  .carte-espace{ flex: 0 0 78%; scroll-snap-align: start; }
+  /* Chaque carte s'arrête au milieu de l'écran, ses deux voisines dépassant
+     d'autant de part et d'autre. Pas de `scroll-padding` : le retrait étant
+     le même à gauche et à droite, le centre de la zone de calage est déjà
+     celui de l'écran. */
+  .carte-espace{ flex: 0 0 var(--carte); scroll-snap-align: center; }
   /* Pas d'apparition carte par carte ici (§19) : l'observateur prend l'écran
      pour référence, et les deux dernières cartes sont posées hors de l'écran,
      à droite. Elles ne seraient « vues » qu'au moment où on les amène —
