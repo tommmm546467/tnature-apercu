@@ -850,6 +850,9 @@ strong{ font-weight: 600; }
   text-align: left;
   transition: box-shadow var(--t-base), transform var(--t-base);
 }
+/* Les copies ne servent qu'à la roulette du téléphone (§« les espaces
+   défilent ») : partout ailleurs, elles n'existent pas. */
+.carte-espace--copie{ display: none; }
 .carte-espace:hover{ transform: translateY(-3px); box-shadow: var(--ombre-survol); }
 .carte-espace__media{ position: absolute; inset: 0; transition: transform var(--t-lent); }
 .carte-espace__media .placeholder-img{ width: 100%; height: 100%; aspect-ratio: auto; border-radius: 0; }
@@ -921,6 +924,7 @@ strong{ font-weight: 600; }
      le même à gauche et à droite, le centre de la zone de calage est déjà
      celui de l'écran. */
   .carte-espace{ flex: 0 0 var(--carte); scroll-snap-align: center; }
+  .carte-espace--copie{ display: block; }
   /* Pas d'apparition carte par carte ici (§19) : l'observateur prend l'écran
      pour référence, et les deux dernières cartes sont posées hors de l'écran,
      à droite. Elles ne seraient « vues » qu'au moment où on les amène —
@@ -2135,6 +2139,7 @@ strong{ font-weight: 600; }
 }
 .sans-js .modale__voile,
 .sans-js .modale__fermer,
+.sans-js .carte-espace--copie,
 .sans-js .carrousel__nav,
 .sans-js .carrousel__barre,
 .sans-js .vignettes,

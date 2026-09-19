@@ -28,6 +28,9 @@
        <button data-rail-suiv>…</button>
      </div>
 
+   Si la piste contient des copies marquées `data-rail-copie`, le rail tourne
+   en boucle — voir `recentrer`.
+
    Scripts classiques volontairement (pas de modules ES) : le site doit
    s'ouvrir par double-clic sur index.html, et file:// interdit les
    modules comme fetch(). Chaque fichier reste isolé dans une IIFE.
@@ -272,7 +275,14 @@
     var suiv = racine.querySelector('[data-rail-suiv]');
     if (!piste || !prec || !suiv) return;
 
-    // Un pas = une carte et son écart. Mesuré à chaque clic, jamais retenu :
+    /* La série est écrite trois fois dans le HTML, les deux copies portant
+       `data-rail-copie` : on en déduit ce que vaut une série. Aucune copie =
+       rail ordinaire, avec un début et une fin. */
+    var copies = piste.querySelectorAll('[data-rail-copie]').length;
+    var parSerie = copies ? piste.children.length - copies : 0;
+    var repos = null;
+
+    // Un pas = une carte et son écart. Mesuré à chaque fois, jamais retenu :
     // la largeur dépend de celle de l'écran, qui peut tourner.
     function pas() {
       var carte = piste.firstElementChild;
@@ -281,6 +291,11 @@
       return carte.getBoundingClientRect().width + (ecart || 0);
     }
 
+    // Le rail ne défile que sur petit écran : au-delà, le CSS remet une
+    // grille et plus rien ne dépasse.
+    function actif() { return piste.scrollWidth - piste.clientWidth > 1; }
+    function serie() { return parSerie * pas(); }
+
     function glisser(sens) {
       piste.scrollBy({
         left: sens * pas(),
@@ -288,19 +303,46 @@
       });
     }
 
-    // Une flèche qui ne mène nulle part doit le dire. La tolérance d'un pixel
-    // absorbe les largeurs fractionnaires : à fond à droite, `scrollLeft`
-    // s'arrête parfois à un demi-pixel de la fin.
+    /* La roulette. Tant qu'on reste dans la série du milieu, il n'y a rien à
+       faire. Dès qu'on en sort, on recule — ou on avance — d'une série
+       entière : à une série près, l'écran montre exactement la même chose,
+       donc le saut est invisible, et il y a de nouveau des cartes des deux
+       côtés. C'est ce qui fait qu'on tourne sans jamais buter.
+       On attend l'arrêt du défilement : sauter pendant que ça glisse
+       casserait l'élan du doigt. */
+    function recentrer() {
+      var s = parSerie && actif() ? serie() : 0;
+      if (!s) return;
+      var x = piste.scrollLeft;
+      if (x < s * 0.5) piste.scrollLeft = x + s;
+      else if (x > s * 1.5) piste.scrollLeft = x - s;
+    }
+
+    /* Une flèche qui ne mène nulle part doit le dire — mais en boucle, les
+       deux mènent toujours quelque part. La tolérance d'un pixel absorbe les
+       largeurs fractionnaires : à fond à droite, `scrollLeft` s'arrête
+       parfois à un demi-pixel de la fin. */
     function majEtat() {
+      if (parSerie) { prec.disabled = false; suiv.disabled = false; return; }
       var reste = piste.scrollWidth - piste.clientWidth;
       prec.disabled = piste.scrollLeft <= 1;
       suiv.disabled = piste.scrollLeft >= reste - 1;
     }
 
+    function surDefilement() {
+      majEtat();
+      window.clearTimeout(repos);
+      repos = window.setTimeout(recentrer, 140);
+    }
+
     prec.addEventListener('click', function () { glisser(-1); });
     suiv.addEventListener('click', function () { glisser(1); });
-    piste.addEventListener('scroll', majEtat, { passive: true });
-    window.addEventListener('resize', majEtat);
+    piste.addEventListener('scroll', surDefilement, { passive: true });
+    window.addEventListener('resize', function () { majEtat(); recentrer(); });
+
+    // Départ au début de la série du milieu : il faut des cartes des deux
+    // côtés dès le premier geste, à gauche comme à droite.
+    if (parSerie && actif()) piste.scrollLeft = serie();
     majEtat();
   }
 
