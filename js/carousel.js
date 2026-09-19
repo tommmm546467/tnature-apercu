@@ -18,6 +18,16 @@
        </div>
      </div>
 
+   Ce fichier porte aussi `TN.rail` : la rangée horizontale des Espaces sur
+   téléphone. Rien à voir avec le carrousel ci-dessus — là, c'est le
+   navigateur qui fait défiler, et les flèches ne font que le lui demander :
+
+     <div data-rail>
+       <div data-rail-piste>…cartes…</div>
+       <button data-rail-prec>…</button>
+       <button data-rail-suiv>…</button>
+     </div>
+
    Scripts classiques volontairement (pas de modules ES) : le site doit
    s'ouvrir par double-clic sur index.html, et file:// interdit les
    modules comme fetch(). Chaque fichier reste isolé dans une IIFE.
@@ -249,8 +259,61 @@
     }
   };
 
+  /* ---------- Rail horizontal ----------
+     Une rangée qu'on fait glisser au doigt, et deux flèches pour qui n'y
+     pense pas. On ne déplace rien à la main : `scrollBy` demande au
+     navigateur d'avancer d'une carte, il garde son inertie, son
+     `scroll-snap` et son rebond. Rien à débrancher au-delà du téléphone —
+     le CSS y remet la grille, la piste ne déborde plus, les deux flèches se
+     désactivent d'elles-mêmes et sont de toute façon masquées. */
+  function Rail(racine) {
+    var piste = racine.querySelector('[data-rail-piste]');
+    var prec = racine.querySelector('[data-rail-prec]');
+    var suiv = racine.querySelector('[data-rail-suiv]');
+    if (!piste || !prec || !suiv) return;
+
+    // Un pas = une carte et son écart. Mesuré à chaque clic, jamais retenu :
+    // la largeur dépend de celle de l'écran, qui peut tourner.
+    function pas() {
+      var carte = piste.firstElementChild;
+      if (!carte) return piste.clientWidth;
+      var ecart = parseFloat(window.getComputedStyle(piste).columnGap);
+      return carte.getBoundingClientRect().width + (ecart || 0);
+    }
+
+    function glisser(sens) {
+      piste.scrollBy({
+        left: sens * pas(),
+        behavior: reduit.matches ? 'auto' : 'smooth'
+      });
+    }
+
+    // Une flèche qui ne mène nulle part doit le dire. La tolérance d'un pixel
+    // absorbe les largeurs fractionnaires : à fond à droite, `scrollLeft`
+    // s'arrête parfois à un demi-pixel de la fin.
+    function majEtat() {
+      var reste = piste.scrollWidth - piste.clientWidth;
+      prec.disabled = piste.scrollLeft <= 1;
+      suiv.disabled = piste.scrollLeft >= reste - 1;
+    }
+
+    prec.addEventListener('click', function () { glisser(-1); });
+    suiv.addEventListener('click', function () { glisser(1); });
+    piste.addEventListener('scroll', majEtat, { passive: true });
+    window.addEventListener('resize', majEtat);
+    majEtat();
+  }
+
+  TN.rail = {
+    init: function (contexte) {
+      var els = (contexte || document).querySelectorAll('[data-rail]');
+      Array.prototype.forEach.call(els, Rail);
+    }
+  };
+
   document.addEventListener('DOMContentLoaded', function () {
     TN.carousel.init();
     TN.diaporama.init();
+    TN.rail.init();
   });
 })(window, document);

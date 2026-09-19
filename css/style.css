@@ -879,6 +879,49 @@ strong{ font-weight: 600; }
   backdrop-filter: blur(4px);
 }
 .carte-espace__loupe svg{ width: 18px; height: 18px; }
+/* Les flèches n'existent que le temps du rail (juste en dessous). La classe
+   est doublée pour passer devant `.carrousel__nav`, dont ces boutons héritent
+   le rond blanc et qui est écrit plus bas dans ce fichier (§« Carrousel ») :
+   à poids égal, c'est le dernier écrit qui gagne, et les flèches restaient
+   affichées sur grand écran. Ne pas « simplifier » en `.espaces__nav`. */
+.carrousel__nav.espaces__nav{ display: none; }
+
+/* ---------- Sur téléphone, les espaces défilent ----------
+   Empilées, les quatre cartes faisaient près de 900 px de haut pour quatre
+   photos : on descendait longtemps sans rien apprendre de plus. En rang, la
+   carte suivante affleure toujours le bord droit, et c'est ce débord qui dit
+   qu'il y en a d'autres — mieux qu'une rangée de pastilles.
+   Le défilement est celui du navigateur : on glisse au doigt, les flèches ne
+   font que le lui demander. Sans JavaScript, elles s'effacent (§20) et le
+   rail continue de se glisser. */
+@media (max-width: 767px){
+  .espaces__rail{ position: relative; }
+  .espaces__grille{
+    display: flex;
+    gap: var(--gouttiere);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Le rail traverse l'écran d'un bord à l'autre, mais s'arrête sur la
+       gouttière : la première carte s'aligne sur le titre au-dessus, la
+       dernière ne colle pas au bord. `scroll-padding` fait tomber l'arrêt du
+       défilement au même endroit, sinon la carte se cale sous la gouttière. */
+    padding-inline: var(--gouttiere);
+    margin-inline: calc(-1 * var(--gouttiere));
+    scroll-padding-inline: var(--gouttiere);
+  }
+  .espaces__grille::-webkit-scrollbar{ display: none; }
+  .carte-espace{ flex: 0 0 78%; scroll-snap-align: start; }
+  /* Pas d'apparition carte par carte ici (§19) : l'observateur prend l'écran
+     pour référence, et les deux dernières cartes sont posées hors de l'écran,
+     à droite. Elles ne seraient « vues » qu'au moment où on les amène —
+     arrivées blanches, remplies une demi-seconde plus tard, sous les yeux du
+     visiteur. Empilées, elles entraient par le bas, une par une : le cas ne
+     se posait pas. */
+  .espaces__grille .apparait{ opacity: 1; transform: none; transition: none; }
+  .carrousel__nav.espaces__nav{ display: grid; }
+}
 
 /* Carte carte-Google-Maps : écran de consentement RGPD */
 .carte-maps{
