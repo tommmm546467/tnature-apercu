@@ -109,7 +109,10 @@ strong{ font-weight: 600; }
 .surtitre{
   display: block;
   font-family: var(--f-ui);
-  font-size: var(--fs-petit);
+  /* « La maison », « Les chambres », « Galerie »… : ce sont eux qui annoncent
+     la section, et ils se lisaient plus petits que le corps de texte.
+     Demande de la cliente du 30/09/2026. */
+  font-size: clamp(1rem, 1.3vw, 1.15rem);
   font-weight: 500;
   letter-spacing: var(--ls-surtitre);
   text-transform: uppercase;
@@ -1775,6 +1778,10 @@ strong{ font-weight: 600; }
   font-size: var(--fs-petit);
 }
 .equipements svg{ width: 15px; height: 15px; color: var(--accent); flex: none; }
+/* L'aperçu porte un picto par ligne au lieu de la coche : un dessin de cuisine
+   ou de vélo a besoin d'un peu plus de place qu'une coche pour rester lisible. */
+.equipements--pictos li{ align-items: center; }
+.equipements--pictos svg{ width: 19px; height: 19px; }
 
 /* Liste ordonnée du déroulé d'une prestation */
 .deroule{ counter-reset: etape; display: grid; gap: var(--e-3); }
@@ -2001,6 +2008,10 @@ strong{ font-weight: 600; }
   align-items: start;
 }
 .equipements-groupe__titre{
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+  flex-wrap: wrap;
   margin: 0 0 var(--e-3);
   font-family: var(--f-ui);
   font-size: var(--fs-micro);
@@ -2009,8 +2020,11 @@ strong{ font-weight: 600; }
   text-transform: uppercase;
   color: var(--accent);
 }
+.equipements-groupe__titre svg{ width: 17px; height: 17px; flex: none; }
+/* Le titre est devenu une ligne flex : sans cette base, la note se rangerait à
+   côté du titre au lieu de passer dessous. */
 .equipements-groupe__note{
-  display: block;
+  flex: 0 0 100%;
   margin-top: .25em;
   letter-spacing: 0;
   text-transform: none;
@@ -2438,7 +2452,6 @@ strong{ font-weight: 600; }
      deux ne se voyait pas, et les paragraphes prenaient trop de hauteur. */
   #maison p, #maison li,
   #chambres p, #chambres li{ font-size: var(--fs-mobile-texte); }
-  #maison .surtitre, #chambres .surtitre,
   #maison .etiquette, #chambres .etiquette,
   #maison .puce, #chambres .puce,
   #maison .carte-chambre__meta{ font-size: var(--fs-micro); }
