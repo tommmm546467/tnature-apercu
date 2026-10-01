@@ -666,8 +666,20 @@ strong{ font-weight: 600; }
   padding-block: calc(var(--h-header) + var(--e-7)) var(--e-9);
 }
 .hero__titre{
-  max-width: 22ch;
+  /* Le titre est coupé à la main dans le gabarit, après « caractère » : deux
+     lignes, jamais trois. Encore faut-il qu'aucune des deux ne se replie —
+     d'où une largeur qui laisse passer la plus longue (« au cœur de
+     Château-Chalon », 25 signes) et un plancher de taille plus bas que celui
+     des autres h1, pour les petits téléphones. */
+  max-width: 26ch;
+  font-size: clamp(1.9rem, 7vw, 5rem);
   text-shadow: 0 2px 18px rgba(56,56,56,.35);
+}
+/* Sous 360 px — un iPhone SE de première génération — 32 px ne passent plus :
+   « au cœur de Château-Chalon » se replie et le titre reprend trois lignes.
+   Mesuré, pas estimé : à 28 px il tient jusqu'à 320 px de large. */
+@media (max-width: 359px){
+  .hero__titre{ font-size: 1.75rem; }
 }
 .hero__sous-titre{
   /* Le bloc est centré, mais `p, li { text-align: left }` vise le <p> lui-même
